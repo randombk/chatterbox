@@ -7,7 +7,7 @@ Feel free to take improvements and use them in your own projects. However this r
 All changes are focused on CUDA inference.
 
 ## Changes:
-
+ * Loosen dependencies (from d4bb20a by @rsxdalv)
 -----
 
 <img width="1200" alt="cb-big2" src="https://github.com/user-attachments/assets/bd8c5f03-e91d-4ee5-b680-57355da204d1" />
