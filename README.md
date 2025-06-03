@@ -15,6 +15,7 @@ All changes are focused on CUDA inference.
  * Output_attentions=False optimization (from 1f6755e by @rsxdalv)
  * Fix deprecation with torch.nn.attention.sdpa_kernel (from ce53185 by @rsxdalv)
  * Disable AlignmentStreamAnalyzer (from 6a496a6 by @rsxdalv)
+ * Explicit cast from DynamicCache.from_legacy_cache (from d1306d0 by @rsxdalv)
 -----
 
 <img width="1200" alt="cb-big2" src="https://github.com/user-attachments/assets/bd8c5f03-e91d-4ee5-b680-57355da204d1" />
