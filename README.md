@@ -12,6 +12,7 @@ All changes are focused on CUDA inference.
  * Remove omegaconf dependency (from PR 129 by @BBC-Esq)
  * Remove conformer dependency (from PR 130 by @BBC-Esq)
  * Remove perth dependency and watermarking.
+ * Output_attentions=False optimization (from 1f6755e by @rsxdalv)
 -----
 
 <img width="1200" alt="cb-big2" src="https://github.com/user-attachments/assets/bd8c5f03-e91d-4ee5-b680-57355da204d1" />
