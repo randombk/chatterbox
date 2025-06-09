@@ -292,10 +292,16 @@ class T3(nn.Module):
         # )
 
         device = embeds.device
+        max_new_tokens = max_new_tokens or self.hp.max_speech_tokens
 
+        # Pre-compute position embeddings for the entire sequence
+        position_ids = torch.arange(max_new_tokens + 1, device=device)
+        position_embeddings = self.speech_pos_emb.get_fixed_embedding(position_ids)
+
+        # Initialize generation
         bos_token = torch.tensor([[self.hp.start_speech_token]], dtype=torch.long, device=device)
         bos_embed = self.speech_emb(bos_token)  # shape: (B, 1, embed_dim)
-        bos_embed = bos_embed + self.speech_pos_emb.get_fixed_embedding(0)
+        bos_embed = bos_embed + position_embeddings[:, 0:1]
 
         # batch_size=2 for CFG
         bos_embed = torch.cat([bos_embed, bos_embed])
@@ -369,7 +375,7 @@ class T3(nn.Module):
 
             # Get embedding for the new token.
             next_token_embed = self.speech_emb(next_token)
-            next_token_embed = next_token_embed + self.speech_pos_emb.get_fixed_embedding(i + 1)
+            next_token_embed = next_token_embed + position_embeddings[:, i+1:i+2]
 
             #  For CFG
             if cfg_weight > 0.0:
@@ -388,6 +394,6 @@ class T3(nn.Module):
             # Update the kv_cache.
             past = output.past_key_values
 
-        # Concatenate all predicted tokens along the sequence dimension.
-        predicted_tokens = torch.cat(predicted, dim=1)  # shape: (B, num_tokens)
+        # Concatenate all predicted tokens
+        predicted_tokens = torch.cat(predicted, dim=1)
         return predicted_tokens
