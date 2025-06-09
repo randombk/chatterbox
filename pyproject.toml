@@ -10,7 +10,6 @@ authors = [
 ]
 dependencies = [
     "numpy",
-    "resampy==0.4.3",
     "s3tokenizer",
     "torch",
     "torchaudio",
