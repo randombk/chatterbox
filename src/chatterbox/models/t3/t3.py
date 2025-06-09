@@ -68,6 +68,7 @@ class T3(nn.Module):
         # logit projection
         self.text_head = nn.Linear(self.cfg.hidden_size, hp.text_tokens_dict_size, bias=False)
         self.speech_head = nn.Linear(self.cfg.hidden_size, hp.speech_tokens_dict_size, bias=False)
+
         self.compiled = False
 
     @property
@@ -232,6 +233,27 @@ class T3(nn.Module):
         Args:
             text_tokens: a 1D (unbatched) or 2D (batched) tensor.
         """
+        # Compile the model if it's not already compiled
+        if not self.compiled:
+            # alignment_stream_analyzer = AlignmentStreamAnalyzer(
+            #     self.tfmr,
+            #     None,
+            #     text_tokens_slice=(len_cond, len_cond + text_tokens.size(-1)),
+            #     alignment_layer_idx=9, # TODO: hparam or something?
+            #     eos_idx=self.hp.stop_speech_token,
+            # )
+
+            # In order to use the standard HF generate method, we need to extend some methods to inject our custom logic
+            # Note the llama-specific logic. Other tfmr types can be added later.
+            patched_model = T3HuggingfaceBackend(
+                config=self.cfg,
+                llama=self.tfmr,
+                speech_enc=self.speech_emb,
+                speech_head=self.speech_head,
+                # alignment_stream_analyzer=alignment_stream_analyzer,
+            )
+            self.patched_model = torch.compile(patched_model, fullgraph=True)
+
         # Validate / sanitize inputs
         assert prepend_prompt_speech_tokens is None, "not implemented"
         _ensure_BOT_EOT(text_tokens, self.hp)
@@ -248,32 +270,6 @@ class T3(nn.Module):
             speech_tokens=initial_speech_tokens,
             cfg_weight=cfg_weight,
         )
-
-        # In order to use the standard HF generate method, we need to extend some methods to inject our custom logic
-        # Note the llama-specific logic. Other tfmr types can be added later.
-
-        # self.compiled = False
-
-        # TODO? synchronize the expensive compile function
-        # with self.compile_lock:
-        if not self.compiled:
-            # alignment_stream_analyzer = AlignmentStreamAnalyzer(
-            #     self.tfmr,
-            #     None,
-            #     text_tokens_slice=(len_cond, len_cond + text_tokens.size(-1)),
-            #     alignment_layer_idx=9, # TODO: hparam or something?
-            #     eos_idx=self.hp.stop_speech_token,
-            # )
-            patched_model = T3HuggingfaceBackend(
-                config=self.cfg,
-                llama=self.tfmr,
-                speech_enc=self.speech_emb,
-                speech_head=self.speech_head,
-                # alignment_stream_analyzer=alignment_stream_analyzer,
-            )
-            self.patched_model = patched_model
-            self.compiled = True
-
         # # Run normal generate method, which calls our custom extended methods
         # return self.patched_model.generate(
         #     inputs=initial_speech_tokens,
