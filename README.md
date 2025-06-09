@@ -10,6 +10,7 @@ All changes are focused on CUDA inference.
  * Loosen dependencies (from d4bb20a by @rsxdalv)
  * Remove librosa dependency (from PR 128 by @BBC-Esq)
  * Remove omegaconf dependency (from PR 129 by @BBC-Esq)
+ * Remove conformer dependency (from PR 130 by @BBC-Esq)
 -----
 
 <img width="1200" alt="cb-big2" src="https://github.com/user-attachments/assets/bd8c5f03-e91d-4ee5-b680-57355da204d1" />

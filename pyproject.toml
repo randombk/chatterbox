@@ -17,7 +17,6 @@ dependencies = [
     "transformers",
     "diffusers",
     "resemble-perth==1.0.1",
-    "conformer",
     "safetensors"
 ]
 
