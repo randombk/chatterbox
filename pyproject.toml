@@ -16,7 +16,8 @@ dependencies = [
     "torchaudio",
     "transformers",
     "diffusers",
-    "safetensors"
+    "safetensors",
+    "numba>=0.61.2",
 ]
 
 [project.urls]
