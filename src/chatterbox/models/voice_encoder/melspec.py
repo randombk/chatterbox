@@ -2,22 +2,18 @@ from functools import lru_cache
 
 from scipy import signal
 import numpy as np
-import torchaudio as ta
-_fb = ta.functional.create_fb_matrix if hasattr(ta.functional, "create_fb_matrix") else ta.functional.melscale_fbanks
-import torch
+import librosa
 
 
 @lru_cache()
 def mel_basis(hp):
     assert hp.fmax <= hp.sample_rate // 2
-    fb = _fb(
-        n_freqs=hp.n_fft // 2 + 1,
+    return librosa.filters.mel(
+        sr=hp.sample_rate,
+        n_fft=hp.n_fft,
         n_mels=hp.num_mels,
-        f_min=hp.fmin,
-        f_max=hp.fmax,
-        sample_rate=hp.sample_rate,
-    ).T              # <-- transpose so shape = (n_mels, n_freqs)
-    return fb.numpy()
+        fmin=hp.fmin,
+        fmax=hp.fmax)  # -> (nmel, nfreq)
 
 
 def preemphasis(wav, hp):
@@ -56,16 +52,16 @@ def melspectrogram(wav, hp, pad=True):
 
 
 def _stft(y, hp, pad=True):
-    return torch.stft(
-        torch.from_numpy(y).float(),
+    # NOTE: after 0.8, pad mode defaults to constant, setting this to reflect for
+    #   historical consistency and streaming-version consistency
+    return librosa.stft(
+        y,
         n_fft=hp.n_fft,
         hop_length=hp.hop_size,
         win_length=hp.win_size,
-        window=torch.hann_window(hp.win_size),
         center=pad,
         pad_mode="reflect",
-        return_complex=True,
-    ).numpy()
+    )
 
 
 def _amp_to_db(x, hp):
