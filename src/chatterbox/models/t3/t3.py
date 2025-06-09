@@ -137,11 +137,11 @@ class T3(nn.Module):
             input_ids=None,
             # position_ids=position_ids, # TODO? ROPE should be fine?
             inputs_embeds=embeds,
-            output_hidden_states=True,
+            # output_hidden_states=True,
             return_dict=True,
             use_cache=(not training),
         )
-        hidden_states = tfmr_out.hidden_states[-1]  # final tfmr layer output, (B, seq, dim)
+        hidden_states = tfmr_out.last_hidden_state  # final tfmr layer output, (B, seq, dim)
 
         # post-processing: splice out text and speech parts of hidden states
         len_text = text_tokens.size(1)
@@ -335,7 +335,7 @@ class T3(nn.Module):
             use_cache=True,
             # output_attentions=True,
             output_attentions=False,
-            output_hidden_states=True,
+            output_hidden_states=False,
             return_dict=True,
         )
         # Initialize kv_cache with the full context.
@@ -368,7 +368,6 @@ class T3(nn.Module):
             predicted.append(next_token)
             generated_ids = torch.cat([generated_ids, next_token], dim=1)
 
-
             # Check for EOS token.
             if next_token.view(-1) == self.hp.stop_speech_token:
                 break
@@ -388,7 +387,7 @@ class T3(nn.Module):
                 # output_attentions=True,
                 # Let's see
                 output_attentions=False,
-                output_hidden_states=True,
+                output_hidden_states=False,
                 return_dict=True,
             )
             # Update the kv_cache.
