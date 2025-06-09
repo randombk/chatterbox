@@ -11,14 +11,12 @@ authors = [
 dependencies = [
     "numpy",
     "resampy==0.4.3",
-    "librosa",
     "s3tokenizer",
     "torch",
     "torchaudio",
     "transformers",
     "diffusers",
     "resemble-perth==1.0.1",
-    "omegaconf",
     "conformer",
     "safetensors"
 ]
