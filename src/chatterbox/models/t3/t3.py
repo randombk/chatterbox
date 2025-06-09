@@ -252,7 +252,9 @@ class T3(nn.Module):
                 speech_head=self.speech_head,
                 # alignment_stream_analyzer=alignment_stream_analyzer,
             )
-            self.patched_model = torch.compile(patched_model)
+            # Disable torch.compile for now
+            # self.patched_model = torch.compile(patched_model)
+            self.patched_model = patched_model
 
         # Validate / sanitize inputs
         assert prepend_prompt_speech_tokens is None, "not implemented"
