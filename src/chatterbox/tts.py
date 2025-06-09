@@ -122,6 +122,9 @@ class ChatterboxTTS:
         self.tokenizer = tokenizer
         self.device = device
         self.conds = conds
+        # Cache for prepare_conditionals
+        self._last_wav_fpath = None
+        self._last_exaggeration = None
 
     @classmethod
     def from_local(cls, ckpt_dir, device) -> 'ChatterboxTTS':
@@ -178,6 +181,13 @@ class ChatterboxTTS:
         return cls.from_local(Path(local_path).parent, device)
 
     def prepare_conditionals(self, wav_fpath, exaggeration=0.5):
+        # Check if we can use cached results
+        if (self._last_wav_fpath == wav_fpath and 
+            self._last_exaggeration == exaggeration and 
+            self.conds is not None):
+            return
+
+        print(f"Preparing conditionals for {wav_fpath} with exaggeration {exaggeration}")
         ## Load reference wav
         s3gen_ref_wav, _sr = librosa.load(wav_fpath, sr=S3GEN_SR)
 
@@ -202,6 +212,10 @@ class ChatterboxTTS:
             emotion_adv=exaggeration * torch.ones(1, 1, 1),
         ).to(device=self.device)
         self.conds = Conditionals(t3_cond, s3gen_ref_dict)
+
+        # Update cache
+        self._last_wav_fpath = wav_fpath
+        self._last_exaggeration = exaggeration
 
     def generate(
         self,
