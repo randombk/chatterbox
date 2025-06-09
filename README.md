@@ -1,4 +1,15 @@
 
+# Forked from Chatterbox TTS
+
+This is a fork to integrate community optimizations and improvements to the Chatterbox TTS model.
+Feel free to take improvements and use them in your own projects. However this repository is primarily for my own use.
+
+All changes are focused on CUDA inference.
+
+## Changes:
+
+-----
+
 <img width="1200" alt="cb-big2" src="https://github.com/user-attachments/assets/bd8c5f03-e91d-4ee5-b680-57355da204d1" />
 
 # Chatterbox TTS
